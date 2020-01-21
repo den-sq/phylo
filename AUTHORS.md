@@ -2,7 +2,7 @@
 
 ## Development Lead
 
-- David Northover [HalfBrickInASock](https://github.com/HalfBrickInASock)
+- David Northover [den-sq](https://github.com/den-sq)
 
 ## Contributors
 
