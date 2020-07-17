@@ -12,7 +12,6 @@ use std::fs::OpenOptions;
 use std::process::{Command, Stdio};
 use serde::{Serialize, Deserialize};
 
-
 pub trait Aligner {
 	fn align_simple_file(&self, file_name: &str, file_type: &str) -> Result<Alignment<Seq>, io::Error>;
 	//fn align_seq<T: SeqData>(&self, seq_list: Vec<T>) -> Alignment<T>;
@@ -224,6 +223,54 @@ impl<T:SeqData> Alignment<T> {
 		}
 	}
 
+
+	/// List of IDs of sequences in alignment
+	pub fn id_list(&self) -> Vec<String> {
+		self.members.iter().map(|x| x.id().to_string()).collect()
+	}
+
+	/// Returns sequences not shared between the two alignments based on sequence id.
+	pub fn unshared(&self, other: Alignment<T>) -> Vec<String> {
+		let mut other_ids = other.id_list();
+		let mut unshared_ids: Vec<String> = Vec::new();
+
+		for id in self.id_list() {
+			if let Some(x) = other_ids.iter().position(|x| *x == id) {
+				other_ids.remove(x);
+			} else {
+				unshared_ids.push(id);
+			}
+		}
+		unshared_ids.append(&mut other_ids);
+		unshared_ids
+	}
+
+	/// Returns alignment filtered by given list of ids.
+	pub fn filter_by_id(&self, filter: Vec<String>) -> Alignment<T> {
+		let mut new_align: Alignment<T> = Alignment::new();
+		for id in filter {
+			if let Some(x) = self.members.iter().position(|x| x.id() == id) {
+				new_align.members.push(self.members[x].clone());
+			}
+		}
+
+		new_align
+	}
+
+	/// Returns a Vec of sequences that is the alignment with gaps removed.
+	/// Collapses probabalistic sequences into single-sites.
+	pub fn degap(&self) -> Vec<Seq> {
+		let mut seq_set: Vec<Seq> = Vec::new();
+		for seq in &self.members {
+			let mut compact_seq = seq.seq();
+			compact_seq.retain(|x| *x != '-');
+			seq_set.push(Seq::new(
+				seq.id().to_string(),
+				compact_seq
+			));
+		}
+		seq_set
+	}
 
 	pub fn likely_alignment(&self) -> Alignment<Seq> {
 		let mut likely_seqs: Vec<Seq> = Vec::new();

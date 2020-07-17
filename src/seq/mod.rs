@@ -3,7 +3,7 @@ use std::io;
 use std::fs::File;
 use std::io::prelude::*;
 
-pub trait SeqData {
+pub trait SeqData: Clone {
 	fn len(&self) -> usize;
 	fn id(&self) -> &str;
 	fn seq(&self) -> Vec<char>;
@@ -61,7 +61,7 @@ pub struct QCSite {
     pub qual: u32
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct QCSeq {
 	pub sites: Vec<QCSite>,
 	pub id: String
@@ -82,7 +82,7 @@ pub struct ProbabalisticSite {
 	pub prob: f64
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ProbabalisticSeq {
 	pub sites: Vec<Vec<ProbabalisticSite>>,
 	pub id: String
