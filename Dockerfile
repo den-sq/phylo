@@ -11,7 +11,7 @@ FROM scratch
 
 ARG GIT_COMMIT
 ARG VERSION
-LABEL REPO="https://github.com/HalfBrickInASock/phylo"
+LABEL REPO="https://github.com/den-sq/phylo"
 LABEL GIT_COMMIT=$GIT_COMMIT
 LABEL VERSION=$VERSION
 
