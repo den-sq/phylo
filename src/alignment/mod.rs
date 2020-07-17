@@ -539,6 +539,16 @@ impl<T:SeqData> Alignment<T> {
                     "phylip" | "phylip_strict" => self.serialize_phylip(),
 					"phylip_loose" => self.serialize_phylip_loose(),
 					"fasta" => self.serialize_fasta(),
+					"extension" => match file_name.rsplit('.').next() {
+						Some(extension) => match extension {
+							"fa" | "fasta" | "fna" | "ffn" | "faa" | "frn" 
+								=> self.serialize_fasta(),
+							"phylip" | "phylip_strict" => self.serialize_phylip(),
+							"phylip_loose" => self.serialize_phylip_loose(),
+							_ => return Err(io::Error::new(io::ErrorKind::InvalidInput, format!("Invalid Format: Could Not Determine from Extension {}", extension)))
+		
+						}, _ => return Err(io::Error::new(io::ErrorKind::InvalidInput, format!("Invalid Format: No File Extension to Autodetect")))
+					},
                     _ => return Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid Format"))
                 };
                 
